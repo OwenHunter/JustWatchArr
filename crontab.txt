@@ -1,1 +1,0 @@
-0 3 * * * /usr/loca/bin/python /app/justwatcharr.py
