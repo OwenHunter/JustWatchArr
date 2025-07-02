@@ -1,7 +1,4 @@
 #!/bin/bash
 
-crontab /app/crontab.txt
-
-python -u /app/justwatcharr.py
-
-exec cron -f
+/usr/local/bin/python /app/justwatcharr.py
+cron && tail -f /var/log/cron.log

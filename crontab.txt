@@ -1,1 +1,0 @@
-0 3 * * * /usr/local/bin/python /app/justwatcharr.py > /dev/stdout
