@@ -1,5 +1,7 @@
 #!/bin/bash
 
+printenv >> /etc/environment
+
 case $RUNPERIOD in
 	"Daily")
 		cronstring="0 3 * * *"
