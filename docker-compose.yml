@@ -10,3 +10,4 @@ services:
       - JUSTWATCH_PROVIDERS=Netflix,Amazon Prime Video,Disney Plus,Apple TV+
       - JUSTWATCH_CONTENT_TYPES=FREE,FLATRATE
       - JUSTWATCH_REGION=US
+      - RUNPERIOD=Weekly
