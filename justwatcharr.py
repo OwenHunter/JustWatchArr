@@ -151,10 +151,14 @@ def main():
                     pass
 
                 if offers:
-                    print(f"{str(datetime.now())} - {movie['title']}: Available on {', '.join(offers)}")
+                    print(
+                        f"{str(datetime.now())} - {movie['title']}: Available on {', '.join(offers)}"
+                    )
                     print(f"{str(datetime.now())} - {movie['title']}: Unmonitoring")
                     radarr.unmonitor_movie(movie)
-                    print(f"{str(datetime.now())} - {movie['title']}: Deleting Local Files")
+                    print(
+                        f"{str(datetime.now())} - {movie['title']}: Deleting Local Files"
+                    )
                     radarr.delete_movie_files(radarr.get_movie_files(movie))
             else:
                 grab = True
@@ -170,7 +174,9 @@ def main():
                     pass
 
                 if grab:
-                    print(f"{str(datetime.now())} - {movie['title']}: Not available, monitoring")
+                    print(
+                        f"{str(datetime.now())} - {movie['title']}: Not available, monitoring"
+                    )
                     radarr.monitor_movie(movie)
 
     print(f"{str(datetime.now())} - Checking Sonarr...")
@@ -201,10 +207,14 @@ def main():
                     pass
 
                 if offers:
-                    print(f"{str(datetime.now())} - {series['title']}: Available on {', '.join(offers)}")
+                    print(
+                        f"{str(datetime.now())} - {series['title']}: Available on {', '.join(offers)}"
+                    )
                     print(f"{str(datetime.now())} - {series['title']}: Unmonitoring")
                     sonarr.unmonitor_series(series)
-                    print(f"{str(datetime.now())} - {series['title']}: Deleting Local Files")
+                    print(
+                        f"{str(datetime.now())} - {series['title']}: Deleting Local Files"
+                    )
                     sonarr.delete_series_files(series)
             else:
                 grab = True
@@ -221,7 +231,9 @@ def main():
                     pass
 
                 if grab:
-                    print(f"{str(datetime.now())} - {series['title']}: Not available, monitoring")
+                    print(
+                        f"{str(datetime.now())} - {series['title']}: Not available, monitoring"
+                    )
                     sonarr.monitor_series(series)
 
 
