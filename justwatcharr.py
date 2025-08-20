@@ -120,6 +120,8 @@ class Sonarr:
 
 
 def main():
+    dev_mode = os.environ.get("JUSTWATCHARR_DEV_MODE", "false").lower() == "true"
+
     jw_providers = [
         p.strip() for p in os.environ.get("JUSTWATCH_PROVIDERS").split(",") if p.strip()
     ]
@@ -150,7 +152,7 @@ def main():
                 except Exception:
                     pass
 
-                if offers:
+                if offers or dev_mode:
                     print(
                         f"{str(datetime.now())} - {movie['title']}: Available on {', '.join(offers)}"
                     )
@@ -206,7 +208,7 @@ def main():
                 except Exception:
                     pass
 
-                if offers:
+                if offers or dev_mode:
                     print(
                         f"{str(datetime.now())} - {series['title']}: Available on {', '.join(offers)}"
                     )
