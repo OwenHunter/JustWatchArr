@@ -138,7 +138,7 @@ def main():
             movie
         ):
             if movie["monitored"] or radarr.get_movie_files(movie):
-                offers = None
+                offers = []
                 try:
                     jw_result = jw.search(movie["title"], jw_region, "en", 1, True)[0]
                     for offer in jw_result.offers:
@@ -152,7 +152,7 @@ def main():
 
                 if offers:
                     print(
-                        f"{str(datetime.now())} - {movie['title']}: Available on {', '.join(offers)}"
+                        f"{str(datetime.now())} - {movie['title']}: Available on {', '.join([offer.package.name for offer in offers])}"
                     )
                     print(f"{str(datetime.now())} - {movie['title']}: Unmonitoring")
                     radarr.unmonitor_movie(movie)
@@ -193,7 +193,7 @@ def main():
             series
         ):
             if series["monitored"] or series["statistics"]["episodeFileCount"] > 0:
-                offers = None
+                offers = []
                 try:
                     jw_result = jw.search(series["title"], jw_region, "en", 1, True)[0]
                     for offer in jw_result.offers:
@@ -208,7 +208,7 @@ def main():
 
                 if offers:
                     print(
-                        f"{str(datetime.now())} - {series['title']}: Available on {', '.join(offers)}"
+                        f"{str(datetime.now())} - {series['title']}: Available on {', '.join([offer.package.name for offer in offers])}"
                     )
                     print(f"{str(datetime.now())} - {series['title']}: Unmonitoring")
                     sonarr.unmonitor_series(series)
