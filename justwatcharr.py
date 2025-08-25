@@ -143,7 +143,7 @@ def main():
                     jw_result = jw.search(movie["title"], jw_region, "en", 1, True)[0]
                     for offer in jw_result.offers:
                         if (
-                            offer.monetization_type == "FLATRATE"
+                            offer.monetization_type in jw_content_types
                             and offer.package.name in jw_providers
                         ):
                             offers.append(offer)
