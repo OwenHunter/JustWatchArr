@@ -11,57 +11,89 @@ class Radarr:
         self.header = {"X-Api-Key": self.api_key}
 
     def _get_tag_info(self, id):
-        response = requests.get(f"{self.url}/api/v3/tag/{id}", headers=self.header)
-        response.raise_for_status()
-        return response.json()
+        requestURL = f"{self.url}/api/v3/tag/{id}"
+        try:
+            response = requests.get(requestURL, headers=self.header)
+            response.raise_for_status()
+            
+            return response.json()
+        except requests.exceptions.ConnectionError:
+            print(f"Error contacting {requestURL}")
+            return None
 
     def get_movies(self):
-        response = requests.get(f"{self.url}/api/v3/movie", headers=self.header)
-        response.raise_for_status()
-        return response.json()
+        requestURL = f"{self.url}/api/v3/movie"
+        try:
+            response = requests.get(requestURL, headers=self.header)
+            response.raise_for_status()
+            
+            return response.json()
+        except requests.exceptions.ConnectionError:
+            print(f"Error contacting {requestURL}")
+            return {}
 
     def get_movie_tags(self, movie):
-        response = requests.get(
-            f"{self.url}/api/v3/movie/{movie['id']}", headers=self.header
-        )
-        response.raise_for_status()
-        tags_json = response.json()["tags"]
-        tags = []
-        for tag in tags_json:
-            tags.append(self._get_tag_info(tag)["label"])
+        requestURL = f"{self.url}/api/v3/movie/{movie['id']}"
+        try:
+            response = requests.get(requestURL, headers=self.header)
+            response.raise_for_status()
+            tags_json = response.json()["tags"]
+            tags = []
+            for tag in tags_json:
+                tag_info = self._get_tag_info(tag)["label"]
+                if tag_info:
+                    tags.append(tag_info)
 
-        return tags
+            return tags
+        except requests.exceptions.ConnectionError:
+            print(f"Error contacting {requestURL}")
+            return []
 
     def unmonitor_movie(self, movie):
         movie["monitored"] = False
-        response = requests.put(
-            f"{self.url}/api/v3/movie/{movie['id']}", headers=self.header, json=movie
-        )
-        response.raise_for_status()
-        return response.json()
+
+        requestURL = f"{self.url}/api/v3/movie/{movie['id']}"
+        try:
+            response = requests.put(requestURL, headers=self.header, json=movie)
+            response.raise_for_status()
+
+            return response.json()
+        except requests.exceptions.ConnectionError:
+            print(f"Error contacting {requestURL}")
+            return {}
 
     def monitor_movie(self, movie):
         movie["monitored"] = True
-        response = requests.put(
-            f"{self.url}/api/v3/movie/{movie['id']}", headers=self.header, json=movie
-        )
-        response.raise_for_status()
-        return response.json()
 
-    def get_movie_files(self, movie):
-        response = requests.get(
-            f"{self.url}/api/v3/moviefile?movieId={movie['id']}", headers=self.header
-        )
-        response.raise_for_status()
-        return response.json()
-
-    def delete_movie_files(self, files):
-        for file in files:
-            response = requests.delete(
-                f"{self.url}/api/v3/moviefile/{file['id']}", headers=self.header
-            )
+        requestURL = f"{self.url}/api/v3/movie/{movie['id']}"
+        try:
+            response = requests.put(requestURL, headers=self.header, json=movie)
             response.raise_for_status()
 
+            return response.json()
+        except requests.exceptions.ConnectionError:
+            print(f"Error contacting {requestURL}")
+            return {}
+
+    def get_movie_files(self, movie):
+        requestURL = f"{self.url}/api/v3/moviefile?movieId={movie['id']}"
+        try:
+            response = requests.get(requestURL, headers=self.header)
+            response.raise_for_status()
+
+            return response.json()
+        except requests.exceptions.ConnectionError:
+            print(f"Error contacting {requestURL}")
+            return None
+
+    def delete_movie_files(self, files):
+        requestURL = f"{self.url}/api/v3/moviefile/{file['id']}"
+        for file in files:
+            try:
+                response = requests.delete(requestURL, headers=self.header)
+                response.raise_for_status()
+            except requests.exceptions.ConnectionError:
+                print(f"Error contacting {requestURL}")
 
 class Sonarr:
     def __init__(self):
@@ -70,53 +102,83 @@ class Sonarr:
         self.header = {"X-Api-Key": self.api_key}
 
     def _get_tag_info(self, id):
-        response = requests.get(f"{self.url}/api/v3/tag/{id}", headers=self.header)
-        response.raise_for_status()
-        return response.json()
+        requestURL = f"{self.url}/api/v3/tag/{id}"
+        try:
+            response = requests.get(requestURL, headers=self.header)
+            response.raise_for_status()
+
+            return response.json()
+        except requests.exceptions.ConnectionError:
+            print(f"Error contacting {requestURL}")
+            return None
 
     def get_series(self):
-        response = requests.get(f"{self.url}/api/v3/series", headers=self.header)
-        response.raise_for_status()
-        return response.json()
+        requestURL = f"{self.url}/api/v3/series"
+        try:
+            response = requests.get(requestURL, headers=self.header)
+            response.raise_for_status()
+
+            return response.json()
+        except requests.exceptions.ConnectionError:
+            print(f"Error contacting {requestURL}")
+            return {}
 
     def get_series_tags(self, series):
-        response = requests.get(
-            f"{self.url}/api/v3/series/{series['id']}", headers=self.header
-        )
-        response.raise_for_status()
-        tags_json = response.json()["tags"]
-        tags = []
-        for tag in tags_json:
-            tags.append(self._get_tag_info(tag)["label"])
+        requestURL = f"{self.url}/api/v3/series/{series['id']}"
+        try:
+            response = requests.get(requestURL, headers=self.header)
+            response.raise_for_status()
+            tags_json = response.json()["tags"]
+            tags = []
+            for tag in tags_json:
+                tag_info = self._get_tag_info(tag)["label"]
+                if tag_info:
+                    tags.append(tag_info)
 
-        return tags
+            return tags
+        except requests.exceptions.ConnectionError:
+            print(f"Error contacting {requestURL}")
+            return []
 
     def monitor_series(self, series):
         series["monitored"] = True
-        response = requests.put(
-            f"{self.url}/api/v3/series/{series['id']}", headers=self.header, json=series
-        )
-        response.raise_for_status()
-        return response.json()
+
+        requestURL = f"{self.url}/api/v3/series/{series['id']}"
+        try:
+            response = requests.put(requestURL, headers=self.header, json=series)
+            response.raise_for_status()
+            
+            return response.json()
+        except requests.exceptions.ConnectionError:
+            print(f"Error contacting {requestURL}")
+            return {}
 
     def unmonitor_series(self, series):
         series["monitored"] = False
-        response = requests.put(
-            f"{self.url}/api/v3/series/{series['id']}", headers=self.header, json=series
-        )
-        response.raise_for_status()
-        return response.json()
+
+        requestURL = f"{self.url}/api/v3/series/{series['id']}"
+        try:
+            response = requests.put(requestURL, headers=self.header, json=series)
+            response.raise_for_status()
+            
+            return response.json()
+        except requests.exceptions.ConnectionError:
+            print(f"Error contacting {requestURL}")
+            return {}
 
     def delete_series_files(self, series):
-        response = requests.get(
-            f"{self.url}/api/v3/episodefile?seriesId={series['id']}",
-            headers=self.header,
-        )
-        response.raise_for_status()
-        for episode in response.json():
-            response = requests.delete(
-                f"{self.url}/api/v3/episodefile/{episode['id']}", headers=self.header
-            )
+        requestURL = f"{self.url}/api/v3/episodefile?seriesId={series['id']}"
+        try:
+            response = requests.get(requestURL, headers=self.header)
+            response.raise_for_status()
+            for episode in response.json():
+                requestURL = f"{self.url}/api/v3/episodefile/{episode['id']}"
+                try:
+                    response = requests.delete(requestURL, headers=self.header)
+                except requests.exceptions.ConnectionError:
+                    print(f"Error contacting {requestURL}")
+        except requests.exceptions.ConnectionError:
+            print(f"Error contacting {requestURL}")
 
 
 def main():
@@ -159,7 +221,9 @@ def main():
                     print(
                         f"{str(datetime.now())} - {movie['title']}: Deleting Local Files"
                     )
-                    radarr.delete_movie_files(radarr.get_movie_files(movie))
+                    movie_files = radarr.get_movie_files(movie)
+                    if movie_files:
+                        radarr.delete_movie_files(movie_files)
             else:
                 grab = True
                 try:
