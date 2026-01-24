@@ -56,11 +56,8 @@ class Radarr:
         try:
             response = requests.put(requestURL, headers=self.header, json=movie)
             response.raise_for_status()
-
-            return response.json()
         except requests.exceptions.ConnectionError:
             print(f"Error contacting {requestURL}")
-            return {}
 
     def monitor_movie(self, movie):
         movie["monitored"] = True
@@ -69,11 +66,8 @@ class Radarr:
         try:
             response = requests.put(requestURL, headers=self.header, json=movie)
             response.raise_for_status()
-
-            return response.json()
         except requests.exceptions.ConnectionError:
             print(f"Error contacting {requestURL}")
-            return {}
 
     def get_movie_files(self, movie):
         requestURL = f"{self.url}/api/v3/moviefile?movieId={movie['id']}"
@@ -147,11 +141,8 @@ class Sonarr:
         try:
             response = requests.put(requestURL, headers=self.header, json=series)
             response.raise_for_status()
-            
-            return response.json()
         except requests.exceptions.ConnectionError:
             print(f"Error contacting {requestURL}")
-            return {}
 
     def unmonitor_series(self, series):
         series["monitored"] = False
@@ -160,11 +151,8 @@ class Sonarr:
         try:
             response = requests.put(requestURL, headers=self.header, json=series)
             response.raise_for_status()
-            
-            return response.json()
         except requests.exceptions.ConnectionError:
             print(f"Error contacting {requestURL}")
-            return {}
 
     def delete_series_files(self, series):
         requestURL = f"{self.url}/api/v3/episodefile?seriesId={series['id']}"
