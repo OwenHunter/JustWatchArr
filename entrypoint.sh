@@ -1,7 +1,9 @@
 #!/bin/bash
 
+echo "$(date +'%Y-%m-%d %H:%M:%S.%6N') - Setting up environment..."
 printenv >> /etc/environment
 
+echo "$(date +'%Y-%m-%d %H:%M:%S.%6N') - Initialising cron..."
 case $RUNPERIOD in
 	"Daily")
 		cronstring="0 3 * * *"
@@ -24,6 +26,7 @@ echo "$cronstring /usr/local/bin/python /app/justwatcharr.py >> /var/log/cron.lo
 crontab /etc/cron.d/justwatcharr
 touch /var/log/cron.log
 
+echo "$(date +'%Y-%m-%d %H:%M:%S.%6N') - Running JustWatchArr..."
 /usr/local/bin/python /app/justwatcharr.py
 
 cron && tail -f /var/log/cron.log
