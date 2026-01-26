@@ -81,8 +81,8 @@ class Radarr:
             return None
 
     def delete_movie_files(self, files):
-        requestURL = f"{self.url}/api/v3/moviefile/{file['id']}"
         for file in files:
+            requestURL = f"{self.url}/api/v3/moviefile/{file['id']}"
             try:
                 response = requests.delete(requestURL, headers=self.header)
                 response.raise_for_status()

@@ -1,0 +1,16 @@
+services:
+    justwatcharr:
+        container_name: justwatcharr
+        image: justwatcharr
+        build:
+            context: ..
+        environment:
+            - RADARR_API_KEY=10581cb6fc22466c90c05721a2641aee
+            - RADARR_URL=https://radarr.roy.owenhunter.me
+            - SONARR_API_KEY=81c2cdc293ae4a5682389f8279d9d52f
+            - SONARR_URL=https://sonarr.roy.owenhunter.me
+            - JUSTWATCH_PROVIDERS=Netflix,Disney Plus,Apple TV,Paramount Plus,BBC iPlayer,ITVX,Amazon Prime Video
+            - JUSTWATCH_CONTENT_TYPES=FREE,FLATRATE
+            - JUSTWATCH_REGION=GB
+            - RUNPERIOD=Daily
+        
