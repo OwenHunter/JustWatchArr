@@ -1,5 +1,7 @@
 import os
 import requests
+import asyncio
+import telegram
 from simplejustwatchapi import justwatch as jw
 from datetime import datetime, timezone
 
