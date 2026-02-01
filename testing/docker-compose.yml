@@ -1,7 +1,7 @@
 services:
     justwatcharr:
         container_name: justwatcharr
-        image: justwatcharr
+        # image: justwatcharr
         build:
             context: ..
         environment:
