@@ -1,10 +1,62 @@
 import os
 import requests
 import asyncio
-import telegram
+# import telegram
 from simplejustwatchapi import justwatch as jw
 from datetime import datetime, timezone
 
+class Telegram:
+    def _check_token(self):
+        requestURL = f"{self.url}/getUpdates"
+        try:
+            response = requests.post(requestURL)
+        except requests.exceptions.ConnectionError:
+            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            return False
+                            
+        response = response.json()
+        if response["ok"]:
+            return True
+        else:
+            return False
+
+    def _get_chat_id(self):
+        requestURL = f"{self.url}/getUpdates"
+        try:
+            response = requests.post(requestURL)
+        except requests.exceptions.ConnectionError:
+            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            return None
+
+        response = response.json()
+
+        print(response)
+
+        return response["chat"]["id"]
+
+    def __init__(self):
+        self.token = os.environ.get("TELEGRAM_BOT_TOKEN")
+        self.url = f"https://api.telegram.org/bot{self.token}/"
+
+        if not self._check_token():
+            print(f"Error contacting Telegram with the token {self.token}")
+
+        self.chat_id = self._get_chat_id()
+
+    def send_message(self, heading, content):
+        requestURL = f"{self.url}/sendMessage"
+        message =   f"""
+                        *JustWatchArr*
+                        _{heading}_
+                        {content}
+                    """
+        payload = {"chat_id": self.chat_id, "text": message, "parse_mode": "MarkdownV2"}
+        
+        try:
+            response = requests.post(requestURL, payload)
+            response.raise_for_status()
+        except requests.exceptions.ConnectionError:
+            print(f"{str(datetime.now())} - Error contacting {requestURL}")
 
 class Radarr:
     def __init__(self):
@@ -292,4 +344,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    telegram = Telegram()
+    telegram.send_message("Header Test", "Content Test")
+
+    # main()

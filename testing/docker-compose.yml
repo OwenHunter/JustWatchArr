@@ -12,5 +12,6 @@ services:
             - JUSTWATCH_PROVIDERS=Netflix,Disney Plus,Apple TV,Paramount Plus,BBC iPlayer,ITVX,Amazon Prime Video
             - JUSTWATCH_CONTENT_TYPES=FREE,FLATRATE
             - JUSTWATCH_REGION=GB
+            - TELEGRAM_BOT_TOKEN="7452097415:AAEP2AD_RtlPW7sEngiwHNJjGcJcn3ApKpo"
             - RUNPERIOD=Daily
         
