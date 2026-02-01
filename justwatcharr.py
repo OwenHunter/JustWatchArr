@@ -1,8 +1,46 @@
 import os
 import requests
+import asyncio
+# import telegram
 from simplejustwatchapi import justwatch as jw
 from datetime import datetime, timezone
 
+class Telegram:
+    def _check_token(self):
+        requestURL = f"{self.url}/getUpdates"
+        try:
+            response = requests.post(requestURL)
+        except requests.exceptions.ConnectionError:        
+            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            return False
+                            
+        response = response.json()
+        print(response)
+        if response["ok"]:
+            return True
+        else:
+            return False
+
+    def __init__(self):
+        self.token = os.environ.get("TELEGRAM_BOT_TOKEN")
+        self.chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+        self.url = f"https://api.telegram.org/bot{self.token}"
+
+        if not self._check_token():
+            print(f"Error contacting Telegram with the token {self.token}")
+
+    def send_message(self, heading, content):
+        requestURL = f"{self.url}/sendMessage"
+        message = f"*JustWatchArr*\n_{heading}_\n{content}"
+        payload = {"chat_id": self.chat_id, "text": message, "parse_mode": "MarkdownV2"}
+        
+        try:
+            response = requests.post(requestURL, payload)
+            response.raise_for_status()
+        except requests.exceptions.ConnectionError:
+            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+
+telegram = Telegram()
 
 class Radarr:
     def __init__(self):
@@ -168,6 +206,9 @@ class Sonarr:
         except requests.exceptions.ConnectionError:
             print(f"{str(datetime.now())} - Error contacting {requestURL}")
 
+def output(origin, content):
+    print(f"{str(datetime.now())} - {origin}: {content}")
+    telegram.send_message(origin, content)    
 
 def main():
     jw_providers = [
@@ -201,13 +242,13 @@ def main():
                     pass
 
                 if offers:
-                    print(
-                        f"{str(datetime.now())} - {movie['title']}: Available on {', '.join([offer.package.name for offer in offers])}"
+                    output(
+                        "Radarr", f"{movie['title']}: Available on {', '.join([offer.package.name for offer in offers])}"
                     )
-                    print(f"{str(datetime.now())} - {movie['title']}: Unmonitoring")
+                    output("Radarr", f"{movie['title']}: Unmonitoring")
                     radarr.unmonitor_movie(movie)
-                    print(
-                        f"{str(datetime.now())} - {movie['title']}: Deleting Local Files"
+                    output(
+                        "Radarr", f"{movie['title']}: Deleting Local Files"
                     )
                     movie_files = radarr.get_movie_files(movie)
                     if movie_files:
@@ -226,8 +267,8 @@ def main():
                     pass
 
                 if grab:
-                    print(
-                        f"{str(datetime.now())} - {movie['title']}: Not available, monitoring"
+                    output(
+                        "Radarr", f"{movie['title']}: Not available, monitoring"
                     )
                     radarr.monitor_movie(movie)
 
@@ -259,13 +300,13 @@ def main():
                     pass
 
                 if offers:
-                    print(
-                        f"{str(datetime.now())} - {series['title']}: Available on {', '.join([offer.package.name for offer in offers])}"
+                    output(
+                        "Sonarr", f"{series['title']}: Available on {', '.join([offer.package.name for offer in offers])}"
                     )
-                    print(f"{str(datetime.now())} - {series['title']}: Unmonitoring")
+                    output("Sonarr", f"{series['title']}: Unmonitoring")
                     sonarr.unmonitor_series(series)
-                    print(
-                        f"{str(datetime.now())} - {series['title']}: Deleting Local Files"
+                    output(
+                        "Sonarr", f"{series['title']}: Deleting Local Files"
                     )
                     sonarr.delete_series_files(series)
             else:
@@ -284,7 +325,7 @@ def main():
 
                 if grab:
                     print(
-                        f"{str(datetime.now())} - {series['title']}: Not available, monitoring"
+                        "Sonarr", f"{series['title']}: Not available, monitoring"
                     )
                     sonarr.monitor_series(series)
 
