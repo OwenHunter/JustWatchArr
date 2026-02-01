@@ -3,7 +3,6 @@ services:
         container_name: justwatcharr
         build:
             context: ..
-            network: host
         environment:
             - RADARR_API_KEY=10581cb6fc22466c90c05721a2641aee
             - RADARR_URL=https://radarr.roy.owenhunter.me
@@ -14,4 +13,3 @@ services:
             - JUSTWATCH_REGION=GB
             - TELEGRAM_BOT_TOKEN=7452097415:AAEP2AD_RtlPW7sEngiwHNJjGcJcn3ApKpo
             - RUNPERIOD=Daily
-        network_mode: host
