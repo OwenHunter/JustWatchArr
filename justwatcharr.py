@@ -15,7 +15,6 @@ class Telegram:
             return False
                             
         response = response.json()
-        print(response)
         if response["ok"]:
             return True
         else:
