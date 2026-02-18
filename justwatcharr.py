@@ -24,7 +24,6 @@ class Telegram:
         self.token = os.environ.get("TELEGRAM_BOT_TOKEN")
         self.chat_id = os.environ.get("TELEGRAM_CHAT_ID")
         self.url = f"https://api.telegram.org/bot{self.token}"
-        self.last_message = int(time.time())
 
         if not self._check_token():
             print(f"Error contacting Telegram with the token {self.token}")
@@ -40,12 +39,13 @@ class Telegram:
                 response = requests.post(requestURL, payload)
                 try:
                     response.raise_for_status()
+                    message_sent = True
                 except requests.exceptions.HTTPError as e:
                     if "Too Many Requests" in e.json()["description"]:
                         time.sleep(e.json()["parameters"]["retry_after"])
+                        continue
                     else:
                         raise e
-                self.last_message = int(time.time())
         except requests.exceptions.ConnectionError:
             print(f"{str(datetime.now())} - Error contacting {requestURL}")
         except requests.exceptions.HTTPError as e:
