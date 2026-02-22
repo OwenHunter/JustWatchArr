@@ -256,14 +256,15 @@ def main():
                     output(
                         "Radarr", f"{movie['title']}: Available on {', '.join([offer.package.name for offer in offers])}"
                     )
-                    output("Radarr", f"{movie['title']}: Unmonitoring")
                     radarr.unmonitor_movie(movie)
-                    output(
-                        "Radarr", f"{movie['title']}: Deleting Local Files"
-                    )
+                    output("Radarr", f"{movie['title']}: Unmonitoring")
                     movie_files = radarr.get_movie_files(movie)
                     if movie_files:
                         radarr.delete_movie_files(movie_files)
+                    output(
+                        "Radarr", f"{movie['title']}: Deleting Local Files"
+                    )
+                    
             else:
                 grab = True
                 try:
@@ -278,10 +279,11 @@ def main():
                     pass
 
                 if grab:
+                    radarr.monitor_movie(movie)
                     output(
                         "Radarr", f"{movie['title']}: Not available, monitoring"
                     )
-                    radarr.monitor_movie(movie)
+                    
 
     print(f"{str(datetime.now())} - Checking Sonarr...")
     sonarr = Sonarr()
@@ -314,12 +316,13 @@ def main():
                     output(
                         "Sonarr", f"{series['title']}: Available on {', '.join([offer.package.name for offer in offers])}"
                     )
-                    output("Sonarr", f"{series['title']}: Unmonitoring")
                     sonarr.unmonitor_series(series)
+                    output("Sonarr", f"{series['title']}: Unmonitoring")
+                    sonarr.delete_series_files(series)
                     output(
                         "Sonarr", f"{series['title']}: Deleting Local Files"
                     )
-                    sonarr.delete_series_files(series)
+                    
             else:
                 grab = True
                 try:
