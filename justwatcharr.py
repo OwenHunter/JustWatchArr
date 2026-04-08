@@ -41,8 +41,8 @@ class Telegram:
                     response.raise_for_status()
                     message_sent = True
                 except requests.exceptions.HTTPError as e:
-                    if "Too Many Requests" in e.json()["description"]:
-                        time.sleep(e.json()["parameters"]["retry_after"])
+                    if "Too Many Requests" in e.response.json()["description"]:
+                        time.sleep(e.response.json()["parameters"]["retry_after"])
                         continue
                     else:
                         raise e
