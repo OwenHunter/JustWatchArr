@@ -11,7 +11,7 @@ class Telegram:
         try:
             response = requests.post(requestURL)
         except requests.exceptions.ConnectionError:        
-            output("Telegram", f"{str(datetime.now())} - Error contacting {requestURL}")
+            print("Telegram", f"{str(datetime.now())} - Error contacting {requestURL}")
             return False
                             
         response = response.json()
@@ -47,9 +47,9 @@ class Telegram:
                     else:
                         raise e
         except requests.exceptions.ConnectionError:
-            output("Telegram", f"{str(datetime.now())} - Error contacting {requestURL}")
+            print(f"{str(datetime.now())} - Error contacting {requestURL}")
         except requests.exceptions.HTTPError as e:
-            output("Telegram", f"{str(datetime.now())} - {e.request.url} - {e} - {e.response.text}")
+            print(f"{str(datetime.now())} - {e.request.url} - {e} - {e.response.text}")
 
 telegram = Telegram()
 
