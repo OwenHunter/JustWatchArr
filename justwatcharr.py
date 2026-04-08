@@ -11,7 +11,7 @@ class Telegram:
         try:
             response = requests.post(requestURL)
         except requests.exceptions.ConnectionError:        
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
             return False
                             
         response = response.json()
@@ -47,9 +47,9 @@ class Telegram:
                     else:
                         raise e
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
         except requests.exceptions.HTTPError as e:
-            print(f"{str(datetime.now())} - {e.request.url} - {e} - {e.response.text}")
+            output(f"{str(datetime.now())} - {e.request.url} - {e} - {e.response.text}")
 
 telegram = Telegram()
 
@@ -67,7 +67,7 @@ class Radarr:
             
             return response.json()
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
             return None
 
     def get_movies(self):
@@ -78,7 +78,7 @@ class Radarr:
             
             return response.json()
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
             return {}
 
     def get_movie_tags(self, movie):
@@ -95,7 +95,7 @@ class Radarr:
 
             return tags
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
             return []
 
     def unmonitor_movie(self, movie):
@@ -106,7 +106,7 @@ class Radarr:
             response = requests.put(requestURL, headers=self.header, json=movie)
             response.raise_for_status()
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
 
     def monitor_movie(self, movie):
         movie["monitored"] = True
@@ -116,7 +116,7 @@ class Radarr:
             response = requests.put(requestURL, headers=self.header, json=movie)
             response.raise_for_status()
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
 
     def get_movie_files(self, movie):
         requestURL = f"{self.url}/api/v3/moviefile?movieId={movie['id']}"
@@ -126,7 +126,7 @@ class Radarr:
 
             return response.json()
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
             return None
 
     def delete_movie_files(self, files):
@@ -136,7 +136,7 @@ class Radarr:
                 response = requests.delete(requestURL, headers=self.header)
                 response.raise_for_status()
             except requests.exceptions.ConnectionError:
-                print(f"{str(datetime.now())} - Error contacting {requestURL}")
+                output(f"{str(datetime.now())} - Error contacting {requestURL}")
 
 class Sonarr:
     def __init__(self):
@@ -152,7 +152,7 @@ class Sonarr:
 
             return response.json()
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
             return None
 
     def get_series(self):
@@ -163,7 +163,7 @@ class Sonarr:
 
             return response.json()
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
             return {}
 
     def get_series_tags(self, series):
@@ -180,7 +180,7 @@ class Sonarr:
 
             return tags
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
             return []
 
     def monitor_series(self, series):
@@ -191,7 +191,7 @@ class Sonarr:
             response = requests.put(requestURL, headers=self.header, json=series)
             response.raise_for_status()
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
 
     def unmonitor_series(self, series):
         series["monitored"] = False
@@ -201,7 +201,7 @@ class Sonarr:
             response = requests.put(requestURL, headers=self.header, json=series)
             response.raise_for_status()
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
 
     def delete_series_files(self, series):
         requestURL = f"{self.url}/api/v3/episodefile?seriesId={series['id']}"
@@ -213,9 +213,9 @@ class Sonarr:
                 try:
                     response = requests.delete(requestURL, headers=self.header)
                 except requests.exceptions.ConnectionError:
-                    print(f"{str(datetime.now())} - Error contacting {requestURL}")
+                    output(f"{str(datetime.now())} - Error contacting {requestURL}")
         except requests.exceptions.ConnectionError:
-            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+            output(f"{str(datetime.now())} - Error contacting {requestURL}")
 
 def output(origin, content):
     print(f"{str(datetime.now())} - {origin}: {content}")
@@ -338,7 +338,7 @@ def main():
                     pass
 
                 if grab:
-                    print(
+                    output(
                         "Sonarr", f"{series['title']}: Not available, monitoring"
                     )
                     sonarr.monitor_series(series)
