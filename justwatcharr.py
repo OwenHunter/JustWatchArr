@@ -118,6 +118,19 @@ class Radarr:
         except requests.exceptions.ConnectionError:
             output(f"{str(datetime.now())} - Error contacting {requestURL}")
 
+    def search_movie(self, movie):
+        requestURL = f"{self.url}/api/v3/command"
+        payload = {
+            "name": "MoviesSearch",
+            "movieIds": [movie["id"]]
+        }
+        try:
+            response = requests.post(requestURL, headers=self.header, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.ConnectionError:
+            print(f"{str(datetime.now())} - Error contacting {requestURL}")
+
     def get_movie_files(self, movie):
         requestURL = f"{self.url}/api/v3/moviefile?movieId={movie['id']}"
         try:
@@ -192,6 +205,19 @@ class Sonarr:
             response.raise_for_status()
         except requests.exceptions.ConnectionError:
             output(f"{str(datetime.now())} - Error contacting {requestURL}")
+
+    def search_series(self, series):
+        requestURL = f"{self.url}/api/v3/command"
+        payload = {
+            "name": "SeriesSearch",
+            "seriesId": series["id"]
+        }
+        try:
+            response = requests.post(requestURL, headers=self.header, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.ConnectionError:
+            print(f"{str(datetime.now())} - Error contacting {requestURL}")
 
     def unmonitor_series(self, series):
         series["monitored"] = False
@@ -280,6 +306,7 @@ def main():
 
                 if grab:
                     radarr.monitor_movie(movie)
+                    radarr.search_movie(movie)
                     output(
                         "Radarr", f"{movie['title']}: Not available, monitoring"
                     )
@@ -338,10 +365,13 @@ def main():
                     pass
 
                 if grab:
+                    sonarr.monitor_series(series)
+                    sonarr.search_series(series)
                     output(
                         "Sonarr", f"{series['title']}: Not available, monitoring"
                     )
-                    sonarr.monitor_series(series)
+                    
+                    
 
 
 if __name__ == "__main__":
