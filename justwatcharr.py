@@ -253,7 +253,7 @@ class Sonarr:
 
 def output(origin, content):
     print(f"{str(datetime.now())} - {origin}: {content}")
-    telegram.send_message(origin, telegram._clean_text(content))
+    telegram.send_message(origin, telegram.clean_text(content))
 
 def main():
     jw_providers = [
