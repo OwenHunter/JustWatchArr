@@ -5,8 +5,8 @@ WORKDIR /app
 COPY justwatcharr.py .
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir --upgrade pip \
-  && pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --root-user-action=ignore --upgrade pip \
+  && pip install --no-cache-dir --root-user-action=ignore -r requirements.txt
 RUN apt-get update && apt-get install -y cron && apt-get clean
 
 COPY entrypoint.sh /
