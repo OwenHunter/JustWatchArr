@@ -28,10 +28,18 @@ class Telegram:
         if not self._check_token():
             print(f"Error contacting Telegram with the token {self.token}")
 
+    def _clean_text(self, text):
+        reserved_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+
+        for char in reserved_chars:
+            text = text.replace(char, rf"\{char}")
+        
+        return text
+
     def send_message(self, heading, content):
         requestURL = f"{self.url}/sendMessage"
         message = f"*JustWatchArr*\n_{heading}_\n{content}"
-        payload = {"chat_id": self.chat_id, "text": message, "parse_mode": "MarkdownV2"}
+        payload = {"chat_id": self.chat_id, "text": _clean_text(message), "parse_mode": "MarkdownV2"}
         
         try:
             message_sent = False
