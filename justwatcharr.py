@@ -318,7 +318,8 @@ def main():
                     output(
                         "Radarr", f"{movie['title']}: Not available, monitoring"
                     )
-                    
+
+    print(f"{str(datetime.now())} - Radarr checks complete")
 
     print(f"{str(datetime.now())} - Checking Sonarr...")
     sonarr = Sonarr()
@@ -379,7 +380,7 @@ def main():
                         "Sonarr", f"{series['title']}: Not available, monitoring"
                     )
                     
-                    
+    print(f"{str(datetime.now())} - Sonarr checks complete")
 
 
 if __name__ == "__main__":
