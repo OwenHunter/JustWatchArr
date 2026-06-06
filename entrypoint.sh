@@ -22,7 +22,9 @@ case $RUNPERIOD in
 		;;
 esac
 
-echo "$cronstring . /etc/environment; /usr/local/bin/python /app/justwatcharr.py >> /var/log/cron.log 2>&1" > /etc/cron.d/justwatcharr
+printenv | grep -v "no_proxy" > /etc/cron.d/justwatcharr
+echo "$cronstring /usr/local/bin/python /app/justwatcharr.py >> /var/log/cron.log 2>&1" >> /etc/cron.d/justwatcharr
+
 crontab /etc/cron.d/justwatcharr
 touch /var/log/cron.log
 
