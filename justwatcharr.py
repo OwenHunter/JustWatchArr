@@ -1,20 +1,20 @@
 import os
 import requests
-import asyncio
 import time
 import schedule
 from simplejustwatchapi import justwatch as jw
 from datetime import datetime, timezone
+
 
 class Telegram:
     def _check_token(self):
         requestURL = f"{self.url}/getUpdates"
         try:
             response = requests.post(requestURL)
-        except requests.exceptions.ConnectionError:        
+        except requests.exceptions.ConnectionError:
             print("Telegram", f"{str(datetime.now())} - Error contacting {requestURL}")
             return False
-                            
+
         response = response.json()
         if response["ok"]:
             return True
@@ -30,18 +30,37 @@ class Telegram:
             print(f"Error contacting Telegram with the token {self.token}")
 
     def clean_text(self, text):
-        reserved_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+        reserved_chars = [
+            "_",
+            "*",
+            "[",
+            "]",
+            "(",
+            ")",
+            "~",
+            "`",
+            ">",
+            "#",
+            "+",
+            "-",
+            "=",
+            "|",
+            "{",
+            "}",
+            ".",
+            "!",
+        ]
 
         for char in reserved_chars:
             text = text.replace(char, rf"\{char}")
-        
+
         return text
 
     def send_message(self, heading, content):
         requestURL = f"{self.url}/sendMessage"
         message = f"*JustWatchArr*\n_{heading}_\n{content}"
-        payload = {"chat_id": self.chat_id, "text":message, "parse_mode": "MarkdownV2"}
-        
+        payload = {"chat_id": self.chat_id, "text": message, "parse_mode": "MarkdownV2"}
+
         try:
             message_sent = False
             while not message_sent:
@@ -60,7 +79,9 @@ class Telegram:
         except requests.exceptions.HTTPError as e:
             print(f"{str(datetime.now())} - {e.request.url} - {e} - {e.response.text}")
 
+
 telegram = Telegram()
+
 
 class Radarr:
     def __init__(self):
@@ -73,7 +94,7 @@ class Radarr:
         try:
             response = requests.get(requestURL, headers=self.header)
             response.raise_for_status()
-            
+
             return response.json()
         except requests.exceptions.ConnectionError:
             output("Radarr", f"{str(datetime.now())} - Error contacting {requestURL}")
@@ -84,7 +105,7 @@ class Radarr:
         try:
             response = requests.get(requestURL, headers=self.header)
             response.raise_for_status()
-            
+
             return response.json()
         except requests.exceptions.ConnectionError:
             output("Radarr", f"{str(datetime.now())} - Error contacting {requestURL}")
@@ -129,10 +150,7 @@ class Radarr:
 
     def search_movie(self, movie):
         requestURL = f"{self.url}/api/v3/command"
-        payload = {
-            "name": "MoviesSearch",
-            "movieIds": [movie["id"]]
-        }
+        payload = {"name": "MoviesSearch", "movieIds": [movie["id"]]}
         try:
             response = requests.post(requestURL, headers=self.header, json=payload)
             response.raise_for_status()
@@ -158,7 +176,10 @@ class Radarr:
                 response = requests.delete(requestURL, headers=self.header)
                 response.raise_for_status()
             except requests.exceptions.ConnectionError:
-                output("Radarr", f"{str(datetime.now())} - Error contacting {requestURL}")
+                output(
+                    "Radarr", f"{str(datetime.now())} - Error contacting {requestURL}"
+                )
+
 
 class Sonarr:
     def __init__(self):
@@ -217,10 +238,7 @@ class Sonarr:
 
     def search_series(self, series):
         requestURL = f"{self.url}/api/v3/command"
-        payload = {
-            "name": "SeriesSearch",
-            "seriesId": series["id"]
-        }
+        payload = {"name": "SeriesSearch", "seriesId": series["id"]}
         try:
             response = requests.post(requestURL, headers=self.header, json=payload)
             response.raise_for_status()
@@ -248,13 +266,18 @@ class Sonarr:
                 try:
                     response = requests.delete(requestURL, headers=self.header)
                 except requests.exceptions.ConnectionError:
-                    output("Sonarr", f"{str(datetime.now())} - Error contacting {requestURL}")
+                    output(
+                        "Sonarr",
+                        f"{str(datetime.now())} - Error contacting {requestURL}",
+                    )
         except requests.exceptions.ConnectionError:
             output("Sonarr", f"{str(datetime.now())} - Error contacting {requestURL}")
+
 
 def output(origin, content):
     print(f"{str(datetime.now())} - {origin}: {content}")
     telegram.send_message(origin, telegram.clean_text(content))
+
 
 def main():
     jw_providers = [
@@ -289,17 +312,16 @@ def main():
 
                 if offers:
                     output(
-                        "Radarr", f"{movie['title']}: Available on {', '.join([offer.package.name for offer in offers])}"
+                        "Radarr",
+                        f"{movie['title']}: Available on {', '.join([offer.package.name for offer in offers])}",
                     )
                     radarr.unmonitor_movie(movie)
                     output("Radarr", f"{movie['title']}: Unmonitoring")
                     movie_files = radarr.get_movie_files(movie)
                     if movie_files:
                         radarr.delete_movie_files(movie_files)
-                    output(
-                        "Radarr", f"{movie['title']}: Deleting Local Files"
-                    )
-                    
+                    output("Radarr", f"{movie['title']}: Deleting Local Files")
+
             else:
                 grab = True
                 try:
@@ -316,9 +338,7 @@ def main():
                 if grab:
                     radarr.monitor_movie(movie)
                     radarr.search_movie(movie)
-                    output(
-                        "Radarr", f"{movie['title']}: Not available, monitoring"
-                    )
+                    output("Radarr", f"{movie['title']}: Not available, monitoring")
 
     print(f"{str(datetime.now())} - Radarr checks complete")
 
@@ -351,15 +371,14 @@ def main():
 
                 if offers:
                     output(
-                        "Sonarr", f"{series['title']}: Available on {', '.join([offer.package.name for offer in offers])}"
+                        "Sonarr",
+                        f"{series['title']}: Available on {', '.join([offer.package.name for offer in offers])}",
                     )
                     sonarr.unmonitor_series(series)
                     output("Sonarr", f"{series['title']}: Unmonitoring")
                     sonarr.delete_series_files(series)
-                    output(
-                        "Sonarr", f"{series['title']}: Deleting Local Files"
-                    )
-                    
+                    output("Sonarr", f"{series['title']}: Deleting Local Files")
+
             else:
                 grab = True
                 try:
@@ -377,17 +396,15 @@ def main():
                 if grab:
                     sonarr.monitor_series(series)
                     sonarr.search_series(series)
-                    output(
-                        "Sonarr", f"{series['title']}: Not available, monitoring"
-                    )
-                    
+                    output("Sonarr", f"{series['title']}: Not available, monitoring")
+
     print(f"{str(datetime.now())} - Sonarr checks complete")
 
 
 def schedule_runs():
     """Set up the scheduler based on RUNPERIOD environment variable"""
     run_period = os.environ.get("RUNPERIOD", "Daily").lower()
-    
+
     if run_period == "daily":
         schedule.every().day.at("03:00").do(main)
     elif run_period == "weekly":
@@ -405,11 +422,13 @@ def schedule_runs():
         # Default to daily
         schedule.every().day.at("03:00").do(main)
 
+
 def _run_if_monthly():
     """Helper to run only on monthly schedule (1st of each month)"""
     now = datetime.now()
     if now.day == 1:
         main()
+
 
 def _run_if_quarterly():
     """Helper to run only on quarterly schedule (1st of months 1, 4, 7, 10)"""
@@ -417,21 +436,23 @@ def _run_if_quarterly():
     if now.day == 1 and now.month in [1, 4, 7, 10]:
         main()
 
+
 def _run_if_yearly():
     """Helper to run only on yearly schedule (Jan 1st)"""
     now = datetime.now()
     if now.day == 1 and now.month == 1:
         main()
 
+
 if __name__ == "__main__":
     print(f"{str(datetime.now())} - Starting JustWatchArr scheduler...")
-    
+
     # Run immediately on startup
     main()
-    
+
     # Set up the scheduler
     schedule_runs()
-    
+
     # Keep the scheduler running
     while True:
         schedule.run_pending()
