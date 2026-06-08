@@ -445,11 +445,11 @@ def _run_if_yearly():
 
 
 if __name__ == "__main__":
-    print(f"{str(datetime.now())} - Starting JustWatchArr scheduler...")
-
+    print(f"{str(datetime.now())} - Starting initial run...")
     # Run immediately on startup
     main()
 
+    print(f"{str(datetime.now())} - Enabling schedule...")
     # Set up the scheduler
     schedule_runs()
 

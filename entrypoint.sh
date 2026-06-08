@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "$(date +'%Y-%m-%d %H:%M:%S.%6N') - Starting JustWatchArr with built-in scheduler..."
-/usr/local/bin/python /app/justwatcharr.py
+echo "$(date +'%Y-%m-%d %H:%M:%S.%6N') - Starting JustWatchArr..."
+/usr/local/bin/python -u /app/justwatcharr.py
