@@ -2,6 +2,7 @@ import os
 import requests
 import asyncio
 import time
+import schedule
 from simplejustwatchapi import justwatch as jw
 from datetime import datetime, timezone
 
@@ -383,5 +384,55 @@ def main():
     print(f"{str(datetime.now())} - Sonarr checks complete")
 
 
+def schedule_runs():
+    """Set up the scheduler based on RUNPERIOD environment variable"""
+    run_period = os.environ.get("RUNPERIOD", "Daily").lower()
+    
+    if run_period == "daily":
+        schedule.every().day.at("03:00").do(main)
+    elif run_period == "weekly":
+        schedule.every().monday.at("03:00").do(main)
+    elif run_period == "monthly":
+        # Run on the 1st of each month at 03:00
+        schedule.every().day.at("03:00").do(lambda: _run_if_monthly())
+    elif run_period == "quarterly":
+        # Run on the 1st of months 1, 4, 7, 10 at 03:00
+        schedule.every().day.at("03:00").do(lambda: _run_if_quarterly())
+    elif run_period == "yearly":
+        # Run on Jan 1st at 03:00
+        schedule.every().day.at("03:00").do(lambda: _run_if_yearly())
+    else:
+        # Default to daily
+        schedule.every().day.at("03:00").do(main)
+
+def _run_if_monthly():
+    """Helper to run only on monthly schedule (1st of each month)"""
+    now = datetime.now()
+    if now.day == 1:
+        main()
+
+def _run_if_quarterly():
+    """Helper to run only on quarterly schedule (1st of months 1, 4, 7, 10)"""
+    now = datetime.now()
+    if now.day == 1 and now.month in [1, 4, 7, 10]:
+        main()
+
+def _run_if_yearly():
+    """Helper to run only on yearly schedule (Jan 1st)"""
+    now = datetime.now()
+    if now.day == 1 and now.month == 1:
+        main()
+
 if __name__ == "__main__":
+    print(f"{str(datetime.now())} - Starting JustWatchArr scheduler...")
+    
+    # Run immediately on startup
     main()
+    
+    # Set up the scheduler
+    schedule_runs()
+    
+    # Keep the scheduler running
+    while True:
+        schedule.run_pending()
+        time.sleep(300)  # Check schedule every 5 minutes

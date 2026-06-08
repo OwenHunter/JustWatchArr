@@ -1,34 +1,3 @@
 #!/bin/bash
-
-echo "$(date +'%Y-%m-%d %H:%M:%S.%6N') - Setting up environment..."
-printenv >> /etc/environment
-
-echo "$(date +'%Y-%m-%d %H:%M:%S.%6N') - Initialising cron..."
-case $RUNPERIOD in
-	"Daily")
-		cronstring="0 3 * * *"
-		;;
-	"Weekly")
-		cronstring="0 3 * * 1"
-		;;
-	"Monthly")
-		cronstring="0 3 1 * *"
-		;;
-	"Quarterly")
-		cronstring="0 3 1 1,4,7,10 *"
-		;;
-	"Yearly")
-		cronstring="0 3 1 1 *"
-		;;
-esac
-
-printenv | grep -v "no_proxy" > /etc/cron.d/justwatcharr
-echo "$cronstring /usr/local/bin/python /app/justwatcharr.py >> /var/log/cron.log 2>&1" >> /etc/cron.d/justwatcharr
-
-crontab /etc/cron.d/justwatcharr
-touch /var/log/cron.log
-
-echo "$(date +'%Y-%m-%d %H:%M:%S.%6N') - Running JustWatchArr..."
+echo "$(date +'%Y-%m-%d %H:%M:%S.%6N') - Starting JustWatchArr with built-in scheduler..."
 /usr/local/bin/python /app/justwatcharr.py
-
-cron && tail -f /var/log/cron.log
