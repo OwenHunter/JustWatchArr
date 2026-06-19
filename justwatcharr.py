@@ -294,10 +294,11 @@ def main():
     radarr = Radarr()
     movies = radarr.get_movies()
     for movie in movies:
+        movie_files = radarr.get_movie_files(movie)
         if movie["status"] == "released" and "jw-exclude" not in radarr.get_movie_tags(
             movie
         ):
-            if movie["monitored"] or radarr.get_movie_files(movie):
+            if movie.get("monitored", True) or movie_files:
                 offers = []
                 try:
                     jw_result = jw.search(movie["title"], jw_region, "en", 1, True)[0]
@@ -315,12 +316,12 @@ def main():
                         "Radarr",
                         f"{movie['title']}: Available on {', '.join([offer.package.name for offer in offers])}",
                     )
-                    radarr.unmonitor_movie(movie)
-                    output("Radarr", f"{movie['title']}: Unmonitoring")
-                    movie_files = radarr.get_movie_files(movie)
+                    if movie.get("monitored", True):
+                        radarr.unmonitor_movie(movie)
+                        output("Radarr", f"{movie['title']}: Unmonitoring")
                     if movie_files:
                         radarr.delete_movie_files(movie_files)
-                    output("Radarr", f"{movie['title']}: Deleting Local Files")
+                        output("Radarr", f"{movie['title']}: Deleting Local Files")
 
             else:
                 grab = True
@@ -349,13 +350,14 @@ def main():
         series["seasons"] = [
             s for s in series.get("seasons", []) if s.get("seasonNumber") != 0
         ]
+        episode_file_count = series.get("statistics", {}).get("episodeFileCount", 0)
 
         if datetime.fromisoformat(
             series["firstAired"].replace("Z", "+00:00")
         ) <= datetime.now(timezone.utc) and "jw-exclude" not in sonarr.get_series_tags(
             series
         ):
-            if series["monitored"] or series["statistics"]["episodeFileCount"] > 0:
+            if series.get("monitored", True) or episode_file_count > 0:
                 offers = []
                 try:
                     jw_result = jw.search(series["title"], jw_region, "en", 1, True)[0]
@@ -374,10 +376,12 @@ def main():
                         "Sonarr",
                         f"{series['title']}: Available on {', '.join([offer.package.name for offer in offers])}",
                     )
-                    sonarr.unmonitor_series(series)
-                    output("Sonarr", f"{series['title']}: Unmonitoring")
-                    sonarr.delete_series_files(series)
-                    output("Sonarr", f"{series['title']}: Deleting Local Files")
+                    if series.get("monitored", True):
+                        sonarr.unmonitor_series(series)
+                        output("Sonarr", f"{series['title']}: Unmonitoring")
+                    if episode_file_count > 0:
+                        sonarr.delete_series_files(series)
+                        output("Sonarr", f"{series['title']}: Deleting Local Files")
 
             else:
                 grab = True
